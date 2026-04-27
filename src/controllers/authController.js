@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const userModels = require("../models/userModels");
 
 const login = async (req, res) => {
-  console.log(req.body)
   const { email, senha } = req.body;
 
   try {
@@ -21,13 +20,9 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Senha inválida" });
     }
 
-    console.log(usuario)
-
     const token = jwt.sign({ id: usuario.rows[0].id, tipo: usuario.rows[0].tipo }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-
-    console.log(token)
 
     res.status(200).json({
       token,

@@ -133,8 +133,6 @@ const endOrder = async (req, res) => {
 
 const acceptOrder = async (req, res) => {
   try {
-    console.log(req.params);
-    console.log(req.user);
     const pedido_id = req.params.id;
     const usuario_id = req.user.id;
 
