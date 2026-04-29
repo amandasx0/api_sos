@@ -6,8 +6,8 @@ const auth = require("../middlewares/authLogin");
 const onlyVoluntario = require("../middlewares/role");
 
 router.post("/create-orders", auth, validateOrder, controlleOrder.createOrder);
-router.get("/orders", auth, controlleOrder.getOrders);
-router.get("/orders/all", auth, controlleOrder.getAllOrder);
+router.get("/orders", controlleOrder.getOrders);
+router.get("/orders/all", controlleOrder.getAllOrder);
 router.post("/orders/:id/accept", auth, onlyVoluntario, controlleOrder.acceptOrder);
 router.post("/orders/:id/messages", auth, controlleOrder.updateOrder);
 router.get("/orders/:id/messages", auth, controlleOrder.getUpdateOrder);
