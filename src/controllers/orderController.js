@@ -184,7 +184,7 @@ const getUpdateOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const { tipo, urgencia } = req.query;
+    const { tipo, urgencia, search } = req.query;
 
     const validType = ["resgate", "comida_e_agua", "medico"];
     const validUrgencia = ["urgente", "medio", "sem_urgencia"];
@@ -200,6 +200,7 @@ const getOrders = async (req, res) => {
     const result = await orderModels.getOrders({
       tipo,
       urgencia,
+      search,
     });
 
     res.status(200).json(result);
