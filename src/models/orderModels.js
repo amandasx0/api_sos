@@ -175,6 +175,19 @@ const getOrders = async (filters) => {
     index++;
   }
 
+  if (filters.search) {
+    query += ` 
+      AND (
+        descricao ILIKE $${index}
+        OR endereco ILIKE $${index}
+        OR cidade ILIKE $${index}
+        OR estado ILIKE $${index}
+      )
+    `;
+    values.push(`%${filters.search}%`);
+    index++;
+  }
+
   query += ` ORDER BY criado_em DESC`;
 
   const result = await pool.query(query, values);
