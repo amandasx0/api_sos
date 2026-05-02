@@ -20,9 +20,13 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Senha inválida" });
     }
 
-    const token = jwt.sign({ id: usuario.rows[0].id, tipo: usuario.rows[0].tipo }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: usuario.rows[0].id, tipo: usuario.rows[0].tipo },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      },
+    );
 
     res.status(200).json({
       token,
@@ -34,7 +38,11 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Erro interno no servidor", error });
+    console.error("LOGIN ERROR:", error);
+    res.status(500).json({
+      message: "Erro interno no servidor",
+      error: error?.message || error,
+    });
   }
 };
 

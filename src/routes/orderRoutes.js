@@ -11,6 +11,7 @@ router.get("/orders/all", controlleOrder.getAllOrder);
 router.post("/orders/:id/accept", auth, onlyVoluntario, controlleOrder.acceptOrder);
 router.post("/orders/:id/messages", auth, controlleOrder.updateOrder);
 router.get("/orders/:id/messages", auth, controlleOrder.getUpdateOrder);
-router.patch("/orders/:id/finish", auth, onlyVoluntario,controlleOrder.endOrder);
+router.patch("/orders/:id/finish", auth, onlyVoluntario, controlleOrder.endOrder);
+router.get("/voluntary/activity", auth, onlyVoluntario, controlleOrder.getVolunteerActivity);
 
 module.exports = router;

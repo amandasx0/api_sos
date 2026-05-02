@@ -1,5 +1,7 @@
 const orderModels = require("../models/orderModels");
+const shelterModels = require("../models/shelterModels")
 const getLocation = require("../middlewares/geolocation");
+const formatDate = require("../middlewares/formatDate");
 const geocode = require("../middlewares/geocode");
 
 const createOrder = async (req, res) => {
@@ -212,6 +214,48 @@ const getOrders = async (req, res) => {
   }
 };
 
+const getVolunteerActivity = async (req, res) => {
+  try {
+    const voluntario_id = req.user.id;
+
+    const [reservas, pedidos] = await Promise.all([
+      shelterModels.getReservationsByVoluntario(voluntario_id),
+      orderModels.getOrdersByVoluntary(voluntario_id),
+    ]);
+
+    const reservasFormatadas = reservas.rows.map((item) => ({
+      tipo: "reserva",
+      id: item.id,
+      status: item.status,
+      titulo: item.abrigo_nome,
+      descricao: `Solicitação de ${item.usuario_nome}`,
+      quantidade: item.quantidade,
+      criado_em: formatDate(item.criado_em),
+    }));
+
+    const pedidosFormatados = pedidos.rows.map((item) => ({
+      tipo: "pedido",
+      id: item.id,
+      status: item.status,
+      titulo: item.nome,
+      descricao: item.descricao,
+      criado_em: formatDate(item.criado_em),
+    }));
+
+    const result = [...reservasFormatadas, ...pedidosFormatados].sort(
+      (a, b) => new Date(b.criado_em) - new Date(a.criado_em)
+    );
+
+    return res.status(200).json(result);
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Erro ao buscar atividades",
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   updateOrder,
@@ -220,4 +264,5 @@ module.exports = {
   acceptOrder,
   getUpdateOrder,
   getOrders,
+  getVolunteerActivity
 };

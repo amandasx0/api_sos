@@ -198,6 +198,26 @@ const getOrders = async (filters) => {
   }));
 };
 
+const getOrdersByVoluntary = async (voluntario_id) => {
+  return await pool.query(
+    `
+    SELECT 
+      pedidos.id,
+      pedidos.nome,
+      pedidos.descricao,
+      pedidos.urgencia,
+      pedidos.status AS pedido_status,
+      pedidos.criado_em,
+      atendimentos.status AS atendimento_status
+    FROM atendimentos
+    JOIN pedidos ON atendimentos.pedido_id = pedidos.id
+    WHERE atendimentos.voluntario_id = $1
+    ORDER BY pedidos.criado_em DESC
+    `,
+    [voluntario_id]
+  );
+};
+
 module.exports = {
   createOrder,
   acceptOrder,
@@ -208,4 +228,5 @@ module.exports = {
   getUpdateOrder,
   getOrderById,
   getOrders,
+  getOrdersByVoluntary,
 };

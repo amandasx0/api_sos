@@ -136,9 +136,7 @@ const getReservationsByVoluntario = async (req, res) => {
     const result = await shelterModels.getReservationsByVoluntario(voluntario_id);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({
-        message: "Nenhuma solicitação encontrada",
-      });
+      return res.status(200).json([]);
     }
 
      const formatted = result.rows.map((item) => ({
