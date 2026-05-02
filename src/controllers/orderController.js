@@ -267,13 +267,15 @@ const getUserActivity = async (req, res) => {
       shelterModels.getReservationsByUser(usuario_id),
     ]);
 
+    console.log(orders.rows)
 
     const ordersFormatted = orders.rows.map((item) => ({
       tipo: "pedido",
       id: item.id,
-      status: item.pedido_status,
+      status: item.status,
       titulo: item.nome,
       descricao: item.descricao,
+      urgencia: item.urgencia,
       criado_em: item.criado_em,
     }));
 
