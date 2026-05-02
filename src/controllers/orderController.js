@@ -1,5 +1,5 @@
 const orderModels = require("../models/orderModels");
-const shelterModels = require("../models/shelterModels")
+const shelterModels = require("../models/shelterModels");
 const getLocation = require("../middlewares/geolocation");
 const formatDate = require("../middlewares/formatDate");
 const geocode = require("../middlewares/geocode");
@@ -25,12 +25,20 @@ const createOrder = async (req, res) => {
     let finalLng = longitude;
 
     if (latitude && longitude) {
-      const location = await getLocation(latitude, longitude);
+      try {
+        const location = await getLocation(latitude, longitude);
 
-      finalEndereco = location.endereco;
-      finalCidade = location.cidade;
-      finalEstado = location.estado;
-    } else if (endereco && cidade && estado) {
+        if (location) {
+          finalEndereco = location.endereco || finalEndereco;
+          finalCidade = location.cidade || finalCidade;
+          finalEstado = location.estado || finalEstado;
+        }
+      } catch (err) {
+        console.log("Erro ao buscar localização:", err);
+      }
+    }
+
+    else if (endereco && cidade && estado) {
       try {
         const coords = await geocode(endereco, cidade, estado);
 
@@ -39,9 +47,11 @@ const createOrder = async (req, res) => {
       } catch (err) {
         console.log("Geocode falhou, salvando sem coordenadas");
       }
-    } else {
+    }
+
+    if (!finalEndereco || !finalCidade || !finalEstado) {
       return res.status(400).json({
-        message: "Informe localização ou endereço completo",
+        message: "Dados de localização incompletos",
       });
     }
 
@@ -60,7 +70,7 @@ const createOrder = async (req, res) => {
 
     res.status(201).json(result);
   } catch (error) {
-    console.log(error);
+    console.log("ERRO CREATE ORDER:", error);
     res.status(500).json({ message: "Erro ao criar pedido" });
   }
 };
@@ -223,8 +233,6 @@ const getVolunteerActivity = async (req, res) => {
       orderModels.getOrdersByVoluntary(voluntario_id),
     ]);
 
-    console.log(pedidos.rows)
-
     const reservasFormatadas = reservas.rows.map((item) => ({
       tipo: "reserva",
       id: item.id,
@@ -245,11 +253,10 @@ const getVolunteerActivity = async (req, res) => {
     }));
 
     const result = [...reservasFormatadas, ...pedidosFormatados].sort(
-      (a, b) => new Date(b.criado_em) - new Date(a.criado_em)
+      (a, b) => new Date(b.criado_em) - new Date(a.criado_em),
     );
 
     return res.status(200).json(result);
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -267,8 +274,6 @@ const getUserActivity = async (req, res) => {
       shelterModels.getReservationsByUser(usuario_id),
     ]);
 
-    console.log(orders.rows)
-
     const ordersFormatted = orders.rows.map((item) => ({
       tipo: "pedido",
       id: item.id,
@@ -278,7 +283,6 @@ const getUserActivity = async (req, res) => {
       urgencia: item.urgencia,
       criado_em: item.criado_em,
     }));
-
 
     const reservationsFormatted = reservations.rows.map((item) => ({
       tipo: "reserva",
@@ -290,11 +294,10 @@ const getUserActivity = async (req, res) => {
     }));
 
     const result = [...ordersFormatted, ...reservationsFormatted].sort(
-      (a, b) => new Date(b.criado_em) - new Date(a.criado_em)
+      (a, b) => new Date(b.criado_em) - new Date(a.criado_em),
     );
 
     return res.status(200).json(result);
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -312,5 +315,5 @@ module.exports = {
   getUpdateOrder,
   getOrders,
   getVolunteerActivity,
-  getUserActivity
+  getUserActivity,
 };
