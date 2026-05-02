@@ -121,6 +121,24 @@ const getReservationsByVoluntario = async (voluntario_id) => {
   );
 };
 
+const getReservationsByUser = async (usuario_id) => {
+  return await pool.query(
+    `
+    SELECT 
+      reservas_abrigo.id,
+      reservas_abrigo.quantidade,
+      reservas_abrigo.status,
+      reservas_abrigo.criado_em,
+      abrigos.nome AS abrigo_nome
+    FROM reservas_abrigo
+    JOIN abrigos ON reservas_abrigo.abrigo_id = abrigos.id
+    WHERE reservas_abrigo.usuario_id = $1
+    ORDER BY reservas_abrigo.criado_em DESC
+    `,
+    [usuario_id]
+  );
+};
+
 module.exports = {
   createShelter,
   allShelters,
@@ -130,4 +148,5 @@ module.exports = {
   updateShelter,
   updateRequestReservation,
   getReservationsByVoluntario,
+  getReservationsByUser,
 };

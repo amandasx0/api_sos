@@ -218,6 +218,24 @@ const getOrdersByVoluntary = async (voluntario_id) => {
   );
 };
 
+const getOrdersByUser = async (usuario_id) => {
+  return await pool.query(
+    `
+    SELECT 
+      id,
+      nome,
+      descricao,
+      urgencia,
+      status,
+      criado_em
+    FROM pedidos
+    WHERE usuario_id = $1
+    ORDER BY criado_em DESC
+    `,
+    [usuario_id]
+  );
+};
+
 module.exports = {
   createOrder,
   acceptOrder,
@@ -229,4 +247,5 @@ module.exports = {
   getOrderById,
   getOrders,
   getOrdersByVoluntary,
+  getOrdersByUser,
 };

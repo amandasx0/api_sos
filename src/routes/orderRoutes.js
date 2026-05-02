@@ -13,5 +13,6 @@ router.post("/orders/:id/messages", auth, controlleOrder.updateOrder);
 router.get("/orders/:id/messages", auth, controlleOrder.getUpdateOrder);
 router.patch("/orders/:id/finish", auth, onlyVoluntario, controlleOrder.endOrder);
 router.get("/voluntary/activity", auth, onlyVoluntario, controlleOrder.getVolunteerActivity);
+router.get("/user/activity", auth, controlleOrder.getUserActivity);
 
 module.exports = router;

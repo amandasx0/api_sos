@@ -258,6 +258,49 @@ const getVolunteerActivity = async (req, res) => {
   }
 };
 
+const getUserActivity = async (req, res) => {
+  try {
+    const usuario_id = req.user.id;
+
+    const [orders, reservations] = await Promise.all([
+      orderModels.getOrdersByUser(usuario_id),
+      shelterModels.getReservationsByUser(usuario_id),
+    ]);
+
+
+    const ordersFormatted = orders.rows.map((item) => ({
+      tipo: "pedido",
+      id: item.id,
+      status: item.pedido_status,
+      titulo: item.nome,
+      descricao: item.descricao,
+      criado_em: item.criado_em,
+    }));
+
+
+    const reservationsFormatted = reservations.rows.map((item) => ({
+      tipo: "reserva",
+      id: item.id,
+      status: item.status,
+      titulo: item.abrigo_nome,
+      quantidade: item.quantidade,
+      criado_em: item.criado_em,
+    }));
+
+    const result = [...ordersFormatted, ...reservationsFormatted].sort(
+      (a, b) => new Date(b.criado_em) - new Date(a.criado_em)
+    );
+
+    return res.status(200).json(result);
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Erro ao buscar atividades do usuário",
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   updateOrder,
@@ -266,5 +309,6 @@ module.exports = {
   acceptOrder,
   getUpdateOrder,
   getOrders,
-  getVolunteerActivity
+  getVolunteerActivity,
+  getUserActivity
 };
