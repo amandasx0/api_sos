@@ -223,6 +223,8 @@ const getVolunteerActivity = async (req, res) => {
       orderModels.getOrdersByVoluntary(voluntario_id),
     ]);
 
+    console.log(pedidos.rows)
+
     const reservasFormatadas = reservas.rows.map((item) => ({
       tipo: "reserva",
       id: item.id,
@@ -236,7 +238,7 @@ const getVolunteerActivity = async (req, res) => {
     const pedidosFormatados = pedidos.rows.map((item) => ({
       tipo: "pedido",
       id: item.id,
-      status: item.status,
+      status: item.pedido_status,
       titulo: item.nome,
       descricao: item.descricao,
       criado_em: formatDate(item.criado_em),
